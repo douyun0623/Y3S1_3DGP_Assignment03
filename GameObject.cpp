@@ -168,28 +168,27 @@ void CGameObject::SetPosition(XMFLOAT3 xmf3Position)
 	SetPosition(xmf3Position.x, xmf3Position.y, xmf3Position.z);
 }
 
-void CGameObject::SetDirection(XMFLOAT3 xmf3TargetPosition)
+void CGameObject::SetLookAt(XMFLOAT3 xmf3Look)
 {
-	// 현재 위치
-	XMFLOAT3 xmf3Position = XMFLOAT3(m_xmf4x4World._41, m_xmf4x4World._42, m_xmf4x4World._43);
+	// 방향 벡터 정규화
+	xmf3Look = Vector3::Normalize(xmf3Look);
 
-	// 새로운 Look 벡터 = 목표 위치 - 현재 위치
-	XMFLOAT3 xmf3Look = Vector3::Normalize(Vector3::Subtract(xmf3TargetPosition, xmf3Position));
-
-	// 기본 Up 벡터 (월드 상의 Y축 기준)
+	// 기본 Up 벡터 (Y축)
 	XMFLOAT3 xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 
-	// Look과 Up이 너무 평행하면 Up을 다른 벡터로 바꿔야 함
+	// Look과 Up이 거의 평행하면 Up을 Z축으로 대체
 	if (fabs(Vector3::DotProduct(xmf3Look, xmf3Up)) > 0.99f)
 		xmf3Up = XMFLOAT3(0.0f, 0.0f, 1.0f);
 
-	// 새로운 Right = Up × Look
+	// 오른쪽 벡터 계산 (Up × Look)
 	XMFLOAT3 xmf3Right = Vector3::Normalize(Vector3::CrossProduct(xmf3Up, xmf3Look));
-
-	// 새로운 Up = Look × Right (직교 보장)
+	// 정확한 Up 벡터 재계산 (Look × Right)
 	xmf3Up = Vector3::Normalize(Vector3::CrossProduct(xmf3Look, xmf3Right));
 
-	// 행렬에 반영
+	// 기존 위치 유지
+	XMFLOAT3 xmf3Position = XMFLOAT3(m_xmf4x4World._41, m_xmf4x4World._42, m_xmf4x4World._43);
+
+	// 행렬에 회전 적용
 	m_xmf4x4World._11 = xmf3Right.x;
 	m_xmf4x4World._12 = xmf3Right.y;
 	m_xmf4x4World._13 = xmf3Right.z;
@@ -202,7 +201,6 @@ void CGameObject::SetDirection(XMFLOAT3 xmf3TargetPosition)
 	m_xmf4x4World._32 = xmf3Look.y;
 	m_xmf4x4World._33 = xmf3Look.z;
 
-	// 위치는 그대로 유지
 	m_xmf4x4World._41 = xmf3Position.x;
 	m_xmf4x4World._42 = xmf3Position.y;
 	m_xmf4x4World._43 = xmf3Position.z;

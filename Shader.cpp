@@ -437,7 +437,7 @@ void CBulletShader::FireBullet(const XMFLOAT3& position, const XMFLOAT3& directi
 		if (!pBullet->GetActive())
 		{
 			pBullet->SetPosition(position);
-			pBullet->SetDirection(direction);
+			pBullet->SetLookAt(direction);
 			pBullet->SetActive(true);
 			break;
 		}
