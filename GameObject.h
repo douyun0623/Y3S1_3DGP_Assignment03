@@ -61,6 +61,9 @@ public:
 	void SetPosition(float x, float y, float z);
 	void SetPosition(XMFLOAT3 xmf3Position);
 
+	// 게임객체의 방향을 설정한다.
+	void SetDirection(XMFLOAT3 xmf3TargetPosition);
+
 	//게임 객체를 로컬 x-축, y-축, z-축 방향으로 이동한다.
 	void MoveStrafe(float fDistance = 1.0f);
 	void MoveUp(float fDistance = 1.0f);
@@ -79,7 +82,6 @@ public:
 
 };
 
-
 class CRotatingObject : public CGameObject
 {
 public:
@@ -95,8 +97,26 @@ public:
 			xmf3RotationAxis;
 	}
 	virtual void Animate(float fTimeElapsed);
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 };
 
+class CBulletObject : public CGameObject
+{
+public:
+	CBulletObject(int nMeshes = 1);
+	virtual ~CBulletObject() = default;
+
+	virtual void Animate(float fTimeElapsed);
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera) override;
+
+private:
+	bool active = false;
+	float moveSpeed = 20.f;
+
+public:
+	void SetActive(bool b) { active = b; }
+	bool GetActive() const { return active; }
+};
 
 class CHeightMapTerrain : public CGameObject
 {

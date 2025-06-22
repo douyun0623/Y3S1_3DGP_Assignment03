@@ -145,7 +145,6 @@ void CGameObject::CreateShaderVariables(ID3D12Device* pd3dDevice,
 
 void CGameObject::ReleaseShaderVariables()
 {
-
 }
 
 void CGameObject::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
@@ -167,6 +166,46 @@ void CGameObject::SetPosition(float x, float y, float z)
 void CGameObject::SetPosition(XMFLOAT3 xmf3Position)
 {
 	SetPosition(xmf3Position.x, xmf3Position.y, xmf3Position.z);
+}
+
+void CGameObject::SetDirection(XMFLOAT3 xmf3TargetPosition)
+{
+	// 현재 위치
+	XMFLOAT3 xmf3Position = XMFLOAT3(m_xmf4x4World._41, m_xmf4x4World._42, m_xmf4x4World._43);
+
+	// 새로운 Look 벡터 = 목표 위치 - 현재 위치
+	XMFLOAT3 xmf3Look = Vector3::Normalize(Vector3::Subtract(xmf3TargetPosition, xmf3Position));
+
+	// 기본 Up 벡터 (월드 상의 Y축 기준)
+	XMFLOAT3 xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+
+	// Look과 Up이 너무 평행하면 Up을 다른 벡터로 바꿔야 함
+	if (fabs(Vector3::DotProduct(xmf3Look, xmf3Up)) > 0.99f)
+		xmf3Up = XMFLOAT3(0.0f, 0.0f, 1.0f);
+
+	// 새로운 Right = Up × Look
+	XMFLOAT3 xmf3Right = Vector3::Normalize(Vector3::CrossProduct(xmf3Up, xmf3Look));
+
+	// 새로운 Up = Look × Right (직교 보장)
+	xmf3Up = Vector3::Normalize(Vector3::CrossProduct(xmf3Look, xmf3Right));
+
+	// 행렬에 반영
+	m_xmf4x4World._11 = xmf3Right.x;
+	m_xmf4x4World._12 = xmf3Right.y;
+	m_xmf4x4World._13 = xmf3Right.z;
+
+	m_xmf4x4World._21 = xmf3Up.x;
+	m_xmf4x4World._22 = xmf3Up.y;
+	m_xmf4x4World._23 = xmf3Up.z;
+
+	m_xmf4x4World._31 = xmf3Look.x;
+	m_xmf4x4World._32 = xmf3Look.y;
+	m_xmf4x4World._33 = xmf3Look.z;
+
+	// 위치는 그대로 유지
+	m_xmf4x4World._41 = xmf3Position.x;
+	m_xmf4x4World._42 = xmf3Position.y;
+	m_xmf4x4World._43 = xmf3Position.z;
 }
 
 XMFLOAT3 CGameObject::GetPosition()
@@ -283,7 +322,29 @@ void CRotatingObject::Animate(float fTimeElapsed)
 	CGameObject::Rotate(&m_xmf3RotationAxis, m_fRotationSpeed * fTimeElapsed);
 }
 
+void CRotatingObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	CGameObject::Render(pd3dCommandList, pCamera);
+}
 
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------CBulletObject-------------------------------------------
+//----------------------------------------------------------------------------------------------------
+
+
+CBulletObject::CBulletObject(int nMeshes)
+{
+}
+
+void CBulletObject::Animate(float fTimeElapsed)
+{
+	if (active) CGameObject::MoveForward(moveSpeed * fTimeElapsed);
+}
+
+void CBulletObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	if (active) CGameObject::Render(pd3dCommandList, pCamera);
+}
 
 //----------------------------------------------------------------------------------------------------
 //----------------------------------------CHeightMapTerrain-------------------------------------------
@@ -357,3 +418,5 @@ void CHeightMapTerrain::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 
 	CGameObject::Render(pd3dCommandList, pCamera);
 }
+
+

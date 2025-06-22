@@ -404,6 +404,47 @@ CGameObject* CObjectsShader::PickObjectByRayIntersection(XMFLOAT3& xmf3PickPosit
 	return(pSelectedObject);
 }
 
+//------------------------------------------------------------------------------------------------
+//----------------------------------------CBulletShader------------------------------------------
+//------------------------------------------------------------------------------------------------
+
+void CBulletShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
+{
+	m_nObjects = 100; // 탄환 최대 개수
+	m_ppObjects = new CGameObject * [m_nObjects];
+
+	CCubeMeshDiffused* pCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, 12.0f, 12.0f, 12.0f);
+	CBulletObject* pBulletObject = NULL;
+
+
+	for (int i = 0; i < m_nObjects; ++i) {
+		pBulletObject = new CBulletObject(1);
+
+		pBulletObject->SetMesh(0, pCubeMesh);
+		pBulletObject->SetPosition(0, 0, 0);
+
+		m_ppObjects[i++] = pBulletObject;
+	}
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+}
+
+void CBulletShader::FireBullet(const XMFLOAT3& position, const XMFLOAT3& direction)
+{
+	for (int i = 0; i < m_nObjects; ++i)
+	{
+		CBulletObject* pBullet = static_cast<CBulletObject*>(m_ppObjects[i]);
+		if (!pBullet->GetActive())
+		{
+			pBullet->SetPosition(position);
+			pBullet->SetDirection(direction);
+			pBullet->SetActive(true);
+			break;
+		}
+	}
+}
+
+
 
 
 //------------------------------------------------------------------------------------------------

@@ -97,6 +97,21 @@ public:
 	CGameObject* PickObjectByRayIntersection(XMFLOAT3& xmf3PickPosition, XMFLOAT4X4& xmf4x4View, float* pfNearHitDistance);
 };
 
+class CBulletShader : public CObjectsShader
+{
+public:
+	CBulletShader() = default;
+	virtual ~CBulletShader() = default;
+
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext) override;
+	// virtual void AnimateObjects(float fTimeElapsed) override;
+
+	// virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera) override;
+
+public:
+	void FireBullet(const XMFLOAT3& position, const XMFLOAT3& direction);
+};
+
 class CTerrainShader : public CShader
 {
 public:

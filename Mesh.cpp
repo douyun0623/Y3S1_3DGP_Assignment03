@@ -65,7 +65,7 @@ int CMesh::CheckRayIntersection(XMFLOAT3& xmf3RayOrigin, XMFLOAT3& xmf3RayDirect
 	XMVECTOR xmRayDirection = XMLoadFloat3(&xmf3RayDirection);
 	//모델 좌표계의 광선과 메쉬의 바운딩 박스(모델 좌표계)와의 교차를 검사한다. 
 	bool bIntersected = m_xmBoundingBox.Intersects(xmRayOrigin, xmRayDirection,
-	*pfNearHitDistance);
+		*pfNearHitDistance);
 	//모델 좌표계의 광선이 메쉬의 바운딩 박스와 교차하면 메쉬와의 교차를 검사한다. if (bIntersected)
 	{
 		float fNearHitDistance = FLT_MAX;
@@ -91,7 +91,7 @@ int CMesh::CheckRayIntersection(XMFLOAT3& xmf3RayOrigin, XMFLOAT3& xmf3RayDirect
 				nIntersections++;
 			}
 		}
-}
+	}
 	return(nIntersections);
 }
 
@@ -108,19 +108,19 @@ CTriangleMesh::CTriangleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	m_nStride = sizeof(CDiffusedVertex);
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
-	/*정점(삼각형의 꼭지점)의 색상은 시계방향 순서대로 빨간색, 녹색, 파란색으로 지정한다. 
-	RGBA(Red, Green, Blue, Alpha) 4개의 파라메터를 사용하여 색상을 표현한다. 
+	/*정점(삼각형의 꼭지점)의 색상은 시계방향 순서대로 빨간색, 녹색, 파란색으로 지정한다.
+	RGBA(Red, Green, Blue, Alpha) 4개의 파라메터를 사용하여 색상을 표현한다.
 	각 파라메터는 0.0 ~ 1.0 사이의 실수값을 가진다.*/
 	CDiffusedVertex pVertices[3];
 	pVertices[0] = CDiffusedVertex(XMFLOAT3(0.0f, 0.5f, 0.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
 	pVertices[1] = CDiffusedVertex(XMFLOAT3(0.5f, -0.5f, 0.0f), XMFLOAT4(Colors::Green));
 	pVertices[2] = CDiffusedVertex(XMFLOAT3(-0.5f, -0.5f, 0.0f), XMFLOAT4(Colors::Blue));
-	
+
 	//삼각형 메쉬를 리소스(정점 버퍼)로 생성한다. 
 	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices,
 		m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT,
-		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, & m_pd3dVertexUploadBuffer);
-	
+		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
+
 	//정점 버퍼 뷰를 생성한다. 
 	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
 	m_d3dVertexBufferView.StrideInBytes = m_nStride;
@@ -134,11 +134,11 @@ CTriangleMesh::CTriangleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 //------------------------------------CCubeMeshDiffused--------------------------------------
 //-------------------------------------------------------------------------------------------
 
-CCubeMeshDiffused::CCubeMeshDiffused(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, 
+CCubeMeshDiffused::CCubeMeshDiffused(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,
 	float fWidth, float fHeight, float fDepth) : CMesh(pd3dDevice, pd3dCommandList)
 {
 	//직육면체는 꼭지점(정점)이 8개이다. 
-	m_nVertices = 8;	
+	m_nVertices = 8;
 	m_nStride = sizeof(CDiffusedVertex);
 	m_nOffset = 0;
 	m_nSlot = 0;
@@ -146,7 +146,7 @@ CCubeMeshDiffused::CCubeMeshDiffused(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	//fWidth: 직육면체 가로(x-축) 길이, fHeight: 직육면체 세로(y-축) 길이, fDepth: 직육면체 깊이(z-축) 길이
 	float fx = fWidth * 0.5f, fy = fHeight * 0.5f, fz = fDepth * 0.5f;
-	
+
 	//정점 버퍼는 직육면체의 꼭지점 8개에 대한 정점 데이터를 가진다. 
 	// CDiffusedVertex pVertices[8];
 	m_pVertices = new CDiffusedVertex[m_nVertices];
@@ -162,14 +162,14 @@ CCubeMeshDiffused::CCubeMeshDiffused(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_pVertices,
 		m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT,
 		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
-	
+
 	//정점 버퍼 뷰를 생성한다. 
 	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
 	m_d3dVertexBufferView.StrideInBytes = m_nStride;
 	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
 
-	/*인덱스 버퍼는 직육면체의 6개의 면(사각형)에 대한 기하 정보를 갖는다. 
-	  삼각형 리스트로 직육면체를 표현할 것이므로 각 면은 2개의 삼각형을 가지고 각 삼각형은 3개의 정점이 필요하다. 
+	/*인덱스 버퍼는 직육면체의 6개의 면(사각형)에 대한 기하 정보를 갖는다.
+	  삼각형 리스트로 직육면체를 표현할 것이므로 각 면은 2개의 삼각형을 가지고 각 삼각형은 3개의 정점이 필요하다.
 	  즉, 인덱스 버퍼는 전체 36(=6*2*3)개의 인덱스를 가져야 한다.*/
 	m_nIndices = 36;
 
@@ -199,12 +199,12 @@ CCubeMeshDiffused::CCubeMeshDiffused(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_pnIndices[30] = 6; m_pnIndices[31] = 4; m_pnIndices[32] = 5;
 	//ⓛ 옆면(Right) 사각형의 아래쪽 삼각형
 	m_pnIndices[33] = 7; m_pnIndices[34] = 4; m_pnIndices[35] = 6;
-	
+
 	//인덱스 버퍼를 생성한다. 
 	m_pd3dIndexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_pnIndices,
-		sizeof(UINT)* m_nIndices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER,
-		& m_pd3dIndexUploadBuffer);
-	
+		sizeof(UINT) * m_nIndices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER,
+		&m_pd3dIndexUploadBuffer);
+
 	//인덱스 버퍼 뷰를 생성한다.
 	m_d3dIndexBufferView.BufferLocation = m_pd3dIndexBuffer->GetGPUVirtualAddress();
 	m_d3dIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
@@ -218,6 +218,11 @@ CCubeMeshDiffused::CCubeMeshDiffused(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 CCubeMeshDiffused::~CCubeMeshDiffused()
 {
 
+}
+
+void CCubeMeshDiffused::Render(ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	CMesh::Render(pd3dCommandList);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -341,9 +346,9 @@ CAirplaneMeshDiffused::CAirplaneMeshDiffused(ID3D12Device* pd3dDevice,
 	m_nOffset = 0;
 	m_nSlot = 0;
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	
+
 	float fx = fWidth * 0.5f, fy = fHeight * 0.5f, fz = fDepth * 0.5f;
-	
+
 	//비행기 메쉬를 표현하기 위한 정점 데이터이다. 
 	// CDiffusedVertex pVertices[24 * 3];
 	m_pVertices = new CDiffusedVertex[m_nVertices];
@@ -537,9 +542,9 @@ CHeightMapImage::CHeightMapImage(LPCTSTR pFileName, int nWidth, int nLength, XMF
 	m_xmf3Scale = xmf3Scale;
 
 	BYTE* pHeightMapPixels = new BYTE[m_nWidth * m_nLength];
-	
+
 	//파일을 열고 읽는다. 높이 맵 이미지는 파일 헤더가 없는 RAW 이미지이다. 
-	HANDLE hFile = ::CreateFile(pFileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, 
+	HANDLE hFile = ::CreateFile(pFileName, GENERIC_READ, 0, NULL, OPEN_EXISTING,
 		FILE_ATTRIBUTE_NORMAL | FILE_ATTRIBUTE_READONLY, NULL);
 	DWORD dwBytesRead;
 	::ReadFile(hFile, pHeightMapPixels, (m_nWidth * m_nLength), &dwBytesRead, NULL);
@@ -568,13 +573,13 @@ XMFLOAT3 CHeightMapImage::GetHeightMapNormal(int x, int z)
 {
 	//x-좌표와 z-좌표가 높이 맵의 범위를 벗어나면 지형의 법선 벡터는 y-축 방향 벡터이다. 
 	if ((x < 0.0f) || (z < 0.0f) || (x >= m_nWidth) || (z >= m_nLength)) return(XMFLOAT3(0.0f, 1.0f, 0.0f));
-	
-	/*높이 맵에서 (x, z) 좌표의 픽셀 값과 인접한 두 개의 점 
+
+	/*높이 맵에서 (x, z) 좌표의 픽셀 값과 인접한 두 개의 점
 	(x+1, z), (x, z+1)에 대한 픽셀 값을 사용하여 법선 벡터를 계산한다.*/
 	int nHeightMapIndex = x + (z * m_nWidth);
 	int xHeightMapAdd = (x < (m_nWidth - 1)) ? 1 : -1;
 	int zHeightMapAdd = (z < (m_nLength - 1)) ? m_nWidth : -m_nWidth;
-	
+
 	//(x, z), (x+1, z), (z, z+1)의 픽셀에서 지형의 높이를 구한다.
 	float y1 = (float)m_pHeightMapPixels[nHeightMapIndex] * m_xmf3Scale.y;
 	float y2 = (float)m_pHeightMapPixels[nHeightMapIndex + xHeightMapAdd] * m_xmf3Scale.y;
@@ -594,10 +599,10 @@ XMFLOAT3 CHeightMapImage::GetHeightMapNormal(int x, int z)
 #define _WITH_APPROXIMATE_OPPOSITE_CORNER
 float CHeightMapImage::GetHeight(float fx, float fz)
 {
-	/*지형의 좌표 (fx, fz)는 이미지 좌표계이다. 
+	/*지형의 좌표 (fx, fz)는 이미지 좌표계이다.
 	높이 맵의 x-좌표와 z-좌표가 높이 맵의 범위를 벗어나면 지형의 높이는 0이다.*/
 	if ((fx < 0.0f) || (fz < 0.0f) || (fx >= m_nWidth) || (fz >= m_nLength)) return(0.0f);
-	
+
 	//높이 맵의 좌표의 정수 부분과 소수 부분을 계산한다.
 	int x = (int)fx;
 	int z = (int)fz;
@@ -615,9 +620,9 @@ float CHeightMapImage::GetHeight(float fx, float fz)
 
 	if (bRightToLeft)
 	{
-		/*지형의 삼각형들이 오른쪽에서 왼쪽 방향으로 나열되는 경우이다. 다음 그림의 오른쪽은 (fzPercent < fxPercent)인 경우이다. 
+		/*지형의 삼각형들이 오른쪽에서 왼쪽 방향으로 나열되는 경우이다. 다음 그림의 오른쪽은 (fzPercent < fxPercent)인 경우이다.
 		이 경우 TopLeft의 픽셀 값은 (fTopLeft = fTopRight + (fBottomLeft - fBottomRight))로 근사한다.
-		다음 그림의 왼쪽은 (fzPercent ≥ fxPercent)인 경우이다. 
+		다음 그림의 왼쪽은 (fzPercent ≥ fxPercent)인 경우이다.
 		이 경우 BottomRight의 픽셀 값은 (fBottomRight = fBottomLeft + (fTopRight - fTopLeft))로 근사한다.*/
 		if (fzPercent >= fxPercent)
 			fBottomRight = fBottomLeft + (fTopRight - fTopLeft);
@@ -626,9 +631,9 @@ float CHeightMapImage::GetHeight(float fx, float fz)
 	}
 	else
 	{
-		/*지형의 삼각형들이 왼쪽에서 오른쪽 방향으로 나열되는 경우이다. 다음 그림의 왼쪽은 (fzPercent < (1.0f - fxPercent))인 경우이다. 
-		이 경우 TopRight의 픽셀 값은 (fTopRight = fTopLeft + (fBottomRight - fBottomLeft))로 근사한다. 
-		다음 그림의 오른쪽은 (fzPercent ≥ (1.0f - fxPercent))인 경우이다. 
+		/*지형의 삼각형들이 왼쪽에서 오른쪽 방향으로 나열되는 경우이다. 다음 그림의 왼쪽은 (fzPercent < (1.0f - fxPercent))인 경우이다.
+		이 경우 TopRight의 픽셀 값은 (fTopRight = fTopLeft + (fBottomRight - fBottomLeft))로 근사한다.
+		다음 그림의 오른쪽은 (fzPercent ≥ (1.0f - fxPercent))인 경우이다.
 		이 경우 BottomLeft의 픽셀 값은 (fBottomLeft = fTopLeft + (fBottomRight - fTopRight))로 근사한다.*/
 		if (fzPercent < (1.0f - fxPercent))
 			fTopRight = fTopLeft + (fBottomRight - fBottomLeft);
@@ -671,7 +676,7 @@ CHeightMapGridMesh::CHeightMapGridMesh(ID3D12Device* pd3dDevice,
 
 	CDiffusedVertex* pVertices = new CDiffusedVertex[m_nVertices];
 
-	/*xStart와 zStart는 격자의 시작 위치(x-좌표와 z-좌표)를 나타낸다. 
+	/*xStart와 zStart는 격자의 시작 위치(x-좌표와 z-좌표)를 나타낸다.
 	커다란 지형은 격자들의 이차원 배열로 만들 필요가 있기 때문에 전체 지형에서 각 격자의 시작 위치를 나타내는 정보가 필요하다.*/
 	// float fHeight = 0.0f, fMinHeight = +FLT_MAX, fMaxHeight = -FLT_MAX;
 
@@ -710,7 +715,7 @@ CHeightMapGridMesh::CHeightMapGridMesh(ID3D12Device* pd3dDevice,
 	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
 	m_d3dVertexBufferView.StrideInBytes = m_nStride;
 	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
-	
+
 	delete[] pVertices;
 
 	// 중심 좌표 계산
@@ -733,11 +738,11 @@ CHeightMapGridMesh::CHeightMapGridMesh(ID3D12Device* pd3dDevice,
 	m_xmBoundingBox.Orientation = XMFLOAT4(0, 0, 0, 1); // 회전 없음
 
 	// 따라하기 15번 그림 참조.
-	/*이렇게 인덱스를 나열하면 인덱스 버퍼는 ((nWidth*2)*(nLength-1))+((nLength-1)-1)개의 인덱스를 갖는다. 
-	사각형 줄의 개수는 (nLength-1)이고 한 줄에서 (nWidth*2)개의 인덱스를 갖는다. 
+	/*이렇게 인덱스를 나열하면 인덱스 버퍼는 ((nWidth*2)*(nLength-1))+((nLength-1)-1)개의 인덱스를 갖는다.
+	사각형 줄의 개수는 (nLength-1)이고 한 줄에서 (nWidth*2)개의 인덱스를 갖는다.
 	그리고 줄이 바뀔 때마다 인덱스를 하나 추가하므로 (nLength-1)-1개의 인덱스가 추가로 필요하다.*/
 	m_nIndices = ((nWidth * 2) * (nLength - 1)) + ((nLength - 1) - 1);
-	
+
 	UINT* pnIndices = new UINT[m_nIndices];
 
 	for (int j = 0, z = 0; z < nLength - 1; z++)
@@ -782,7 +787,7 @@ CHeightMapGridMesh::~CHeightMapGridMesh()
 }
 
 //높이 맵 이미지의 픽셀 값을 지형의 높이로 반환한다. 
-float CHeightMapGridMesh::OnGetHeight(int x, int z, void *pContext)
+float CHeightMapGridMesh::OnGetHeight(int x, int z, void* pContext)
 {
 	CHeightMapImage* pHeightMapImage = (CHeightMapImage*)pContext;
 
@@ -807,9 +812,9 @@ XMFLOAT4 CHeightMapGridMesh::OnGetColor(int x, int z, void* pContext)
 	//조명의 색상(세기, 밝기)이다. 
 	XMFLOAT4 xmf4IncidentLightColor(0.9f, 0.8f, 0.4f, 1.0f);
 
-	/*정점 (x, z)에서 조명이 반사되는 양(비율)은 정점 (x, z)의 법선 벡터와 
-	  조명의 방향 벡터의 내적(cos)과 인접한 3개의 정점 (x+1, z), (x, z+1), (x+1, z+1)의 법선 벡터와 
-	  조명의 방향 벡터의 내적을 평균하여 구한다. 
+	/*정점 (x, z)에서 조명이 반사되는 양(비율)은 정점 (x, z)의 법선 벡터와
+	  조명의 방향 벡터의 내적(cos)과 인접한 3개의 정점 (x+1, z), (x, z+1), (x+1, z+1)의 법선 벡터와
+	  조명의 방향 벡터의 내적을 평균하여 구한다.
 	  정점 (x, z)의 색상은 조명 색상(세기)과 반사되는 양(비율)을 곱한 값이다.*/
 	float fScale = Vector3::DotProduct(pHeightMapImage->GetHeightMapNormal(x, z),
 		xmf3LightDirection);
@@ -830,5 +835,3 @@ XMFLOAT4 CHeightMapGridMesh::OnGetColor(int x, int z, void* pContext)
 
 	return(xmf4Color);
 }
-
-
