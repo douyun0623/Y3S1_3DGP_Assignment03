@@ -53,6 +53,10 @@ protected:
 	//카메라를 가지고 있는 플레이어에 대한 포인터이다. 
 	CPlayer *m_pPlayer = NULL;
 
+	//절두체(월드 좌표계)
+protected:
+	BoundingFrustum m_xmFrustum;
+
 public:
 	CCamera();
 	CCamera(CCamera* pCamera);
@@ -66,6 +70,12 @@ public:
 	//카메라 변환 행렬을 생성한다. 
 	void GenerateViewMatrix();
 	void GenerateViewMatrix(XMFLOAT3 xmf3Position, XMFLOAT3 xmf3LookAt, XMFLOAT3 xmf3Up);
+
+public:
+	//절두체(월드 좌표계)를 생성한다. 
+	void GenerateFrustum();
+	//바운딩 박스(OOBB, 월드 좌표계)가 절두체에 포함되는 가를 검사한다. 
+	bool IsInFrustum(BoundingOrientedBox& xmBoundingBox);
 	
 	/*카메라가 여러번 회전을 하게 되면 누적된 실수 연산의 부정확성 때문에 
 	카메라의 로컬 x-축(Right), y-축(Up), z- 축(Look)이 서로 직교하지 않을 수 있다. 
