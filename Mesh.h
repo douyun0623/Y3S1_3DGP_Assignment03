@@ -126,6 +126,10 @@ public:
 	virtual ~CTankMeshDiffused();
 public:
 	void CreateTankMesh(const XMFLOAT3& origin, const XMFLOAT3& size, std::vector<CDiffusedVertex>& outVertices, std::vector<UINT>& outIndices);
+
+public:
+	XMFLOAT3 m_xmf3Min = XMFLOAT3(FLT_MAX, FLT_MAX, FLT_MAX);
+	XMFLOAT3 m_xmf3Max = XMFLOAT3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 };
 
 class CAirplaneMeshDiffused : public CMesh

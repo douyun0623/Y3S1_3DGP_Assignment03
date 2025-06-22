@@ -284,7 +284,12 @@ CTankMeshDiffused::CTankMeshDiffused(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_d3dIndexBufferView.SizeInBytes = sizeof(UINT) * m_nIndices;
 
 	//메쉬의 바운딩 박스(모델 좌표계)를 생성한다.
-	m_xmBoundingBox = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(fx, fy, fz), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	// m_xmBoundingBox = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(fx, fy, fz), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+
+	XMFLOAT3 center = Vector3::ScalarProduct(Vector3::Add(m_xmf3Min, m_xmf3Max), 0.5f);
+	XMFLOAT3 extent = Vector3::ScalarProduct(Vector3::Subtract(m_xmf3Max, m_xmf3Min), 0.5f);
+
+	m_xmBoundingBox = BoundingOrientedBox(center, extent, XMFLOAT4(0, 0, 0, 1));
 }
 
 CTankMeshDiffused::~CTankMeshDiffused()
@@ -313,8 +318,11 @@ void CTankMeshDiffused::CreateTankMesh(const XMFLOAT3& origin, const XMFLOAT3& s
 
 
 	// 정점 추가 (색은 랜덤으로)
-	for (int i = 0; i < 8; ++i)
+	for (int i = 0; i < 8; ++i) {
 		outVertices.emplace_back(corners[i], RANDOM_COLOR);
+		m_xmf3Min = Vector3::Min(m_xmf3Min, corners[i]);
+		m_xmf3Max = Vector3::Max(m_xmf3Max, corners[i]);
+	}
 
 	// 인덱스 12개의 삼각형, 6 면 × 2
 	UINT indices[] = {
