@@ -38,6 +38,9 @@ protected:
 	CObjectsShader *m_pShaders = NULL;
 	int m_nShaders = 0;
 
+	CBulletShader* m_pBulletShader = nullptr;
+	int m_nBShaders = 0;
+
 	//루트 시그너쳐를 나타내는 인터페이스 포인터이다. 
 	ID3D12RootSignature* m_pd3dGraphicsRootSignature = NULL;
 	

@@ -88,6 +88,10 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	m_pShaders[0].CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
 	m_pShaders[0].BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
 
+	m_nBShaders = 1;
+	m_pBulletShader = new CBulletShader[m_nBShaders];
+	m_pBulletShader[0].CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
+	m_pBulletShader[0].BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
 }
 
 void CScene::ReleaseObjects()
@@ -99,6 +103,7 @@ void CScene::ReleaseObjects()
 		m_pShaders[i].ReleaseObjects();
 	}
 	if (m_pShaders) delete[] m_pShaders;
+	if (m_pBulletShader) delete[] m_pBulletShader;
 	if (m_pTerrain) delete m_pTerrain;
 }
 
@@ -124,11 +129,16 @@ void CScene::AnimateObjects(float fTimeElapsed)
 	{
 		m_pShaders[i].AnimateObjects(fTimeElapsed);
 	}
+	for (int i = 0; i < m_nBShaders; i++)
+	{
+		m_pBulletShader[i].AnimateObjects(fTimeElapsed);
+	}
 }
 
 void CScene::ReleaseUploadBuffers()
 {
 	for (int i = 0; i < m_nShaders; i++) m_pShaders[i].ReleaseUploadBuffers();
+	for (int i = 0; i < m_nBShaders; i++) m_pBulletShader[i].ReleaseUploadBuffers();
 	if (m_pTerrain) m_pTerrain->ReleaseUploadBuffers();
 }
 
@@ -185,5 +195,11 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	for (int i = 0; i < m_nShaders; i++)
 	{
 		m_pShaders[i].Render(pd3dCommandList, pCamera);
+	}
+
+	//씬을 렌더링하는 것은 씬을 구성하는 게임 객체(셰이더를 포함하는 객체)들을 렌더링하는 것이다. 
+	for (int i = 0; i < m_nBShaders; i++)
+	{
+		m_pBulletShader[i].Render(pd3dCommandList, pCamera);
 	}
 }

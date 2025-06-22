@@ -421,9 +421,9 @@ void CBulletShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommand
 		pBulletObject = new CBulletObject(1);
 
 		pBulletObject->SetMesh(0, pCubeMesh);
-		pBulletObject->SetPosition(0, 0, 0);
+		pBulletObject->SetPosition(0, 100.f, 0);
 
-		m_ppObjects[i++] = pBulletObject;
+		m_ppObjects[i] = pBulletObject;
 	}
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
