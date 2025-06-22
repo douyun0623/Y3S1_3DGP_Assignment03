@@ -63,6 +63,10 @@ protected:
 	UINT m_nOffset = 0;
 
 protected:
+	//모델 좌표계의 OOBB 바운딩 박스이다. 
+	BoundingOrientedBox m_xmBoundingBox;
+
+protected:
 	/*인덱스 버퍼(인덱스의 배열)와 인덱스 버퍼를 위한 업로드 버퍼에 대한 인터페이스 포인터이다. 
 	  인덱스 버퍼는 정점 버퍼(배열)에 대한 인덱스를 가진다.*/
 	ID3D12Resource* m_pd3dIndexBuffer = NULL;
@@ -80,6 +84,7 @@ protected:
 
 public:
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList);
+	BoundingOrientedBox GetBoundingBox() { return(m_xmBoundingBox); }
 
 };
 
@@ -107,6 +112,10 @@ public:
 	virtual ~CTankMeshDiffused();
 public:
 	void CreateTankMesh(const XMFLOAT3& origin, const XMFLOAT3& size, std::vector<CDiffusedVertex>& outVertices, std::vector<UINT>& outIndices);
+
+public:
+	XMFLOAT3 m_xmf3Min = XMFLOAT3(FLT_MAX, FLT_MAX, FLT_MAX);
+	XMFLOAT3 m_xmf3Max = XMFLOAT3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 };
 
 class CAirplaneMeshDiffused : public CMesh

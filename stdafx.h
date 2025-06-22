@@ -83,7 +83,7 @@ namespace Vector3
 		XMStoreFloat3(&xmf3Result, xmvVector);
 		return(xmf3Result);
 	}
-	inline XMFLOAT3 ScalarProduct(XMFLOAT3& xmf3Vector, float fScalar, bool bNormalize =
+	inline XMFLOAT3 ScalarProduct(const XMFLOAT3& xmf3Vector, float fScalar, bool bNormalize =
 		true)
 	{
 		XMFLOAT3 xmf3Result;
@@ -112,6 +112,19 @@ namespace Vector3
 		XMFLOAT3 xmf3Result;
 		XMStoreFloat3(&xmf3Result, XMLoadFloat3(&xmf3Vector1) -
 			XMLoadFloat3(&xmf3Vector2));
+		return(xmf3Result);
+	}
+	inline XMFLOAT3 Min(const XMFLOAT3& xmf3Vector1, const XMFLOAT3& xmf3Vector2)
+	{
+		XMFLOAT3 xmf3Result;
+		XMStoreFloat3(&xmf3Result, XMVectorMin(XMLoadFloat3(&xmf3Vector1), XMLoadFloat3(&xmf3Vector2)));
+		return(xmf3Result);
+	}
+
+	inline XMFLOAT3 Max(const XMFLOAT3& xmf3Vector1, const XMFLOAT3& xmf3Vector2)
+	{
+		XMFLOAT3 xmf3Result;
+		XMStoreFloat3(&xmf3Result, XMVectorMax(XMLoadFloat3(&xmf3Vector1), XMLoadFloat3(&xmf3Vector2)));
 		return(xmf3Result);
 	}
 	inline float DotProduct(const XMFLOAT3& xmf3Vector1, const XMFLOAT3& xmf3Vector2)
