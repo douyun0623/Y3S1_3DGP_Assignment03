@@ -47,5 +47,7 @@ protected:
 public:
 	CHeightMapTerrain* GetTerrain() { return(m_pTerrain); }
 
+	CGameObject* PickObjectPointedByCursor(int xClient, int yClient, CCamera* pCamera);
+
 };
 

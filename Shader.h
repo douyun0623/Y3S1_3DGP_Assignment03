@@ -49,7 +49,6 @@ protected:
 	//파이프라인 상태 객체들의 리스트(배열)이다. 
 	ID3D12PipelineState **m_ppd3dPipelineStates = NULL;
 	int m_nPipelineStates = 0;
-
 };
 
 
@@ -93,6 +92,9 @@ public:
 protected:
 	CGameObject** m_ppObjects = NULL;
 	int m_nObjects = 0;
+
+public:
+	CGameObject* PickObjectByRayIntersection(XMFLOAT3& xmf3PickPosition, XMFLOAT4X4& xmf4x4View, float* pfNearHitDistance);
 };
 
 class CTerrainShader : public CShader
