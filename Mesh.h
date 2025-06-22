@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 //정점을 표현하기 위한 클래스를 선언한다. 
 class CVertex
 {
@@ -78,25 +76,8 @@ protected:
 	//인덱스 버퍼의 인덱스에 더해질 인덱스이다.
 	int m_nBaseVertex = 0;
 
-protected:
-	//모델 좌표계의 OOBB 바운딩 박스이다.
-	BoundingOrientedBox m_xmBoundingBox;
-
-protected:
-	//정점을 픽킹을 위하여 저장한다(정점 버퍼를 Map()하여 읽지 않아도 되도록).
-	CDiffusedVertex* m_pVertices = NULL;
-
-	//메쉬의 인덱스를 저장한다(인덱스 버퍼를 Map()하여 읽지 않아도 되도록).
-	UINT* m_pnIndices = NULL;
-
 public:
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList);
-
-	BoundingOrientedBox GetBoundingBox() { return(m_xmBoundingBox); }
-
-public:
-	//광선과 메쉬의 교차를 검사하고 교차하는 횟수와 거리를 반환하는 함수이다. 
-	int CheckRayIntersection(XMFLOAT3& xmRayPosition, XMFLOAT3& xmRayDirection, float* pfNearHitDistance);
 
 };
 
@@ -114,22 +95,6 @@ public:
 	CCubeMeshDiffused(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, 
 		float fWidth = 2.0f, float fHeight = 2.0f, float fDepth = 2.0f);
 	virtual ~CCubeMeshDiffused();
-};
-
-// 탱크 추가
-class CTankMeshDiffused : public CMesh
-{
-public:
-	//직육면체의 가로, 세로, 깊이의 길이를 지정하여 직육면체 메쉬를 생성한다. 
-	CTankMeshDiffused(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,
-		float fWidth = 2.0f, float fHeight = 2.0f, float fDepth = 2.0f);
-	virtual ~CTankMeshDiffused();
-public:
-	void CreateTankMesh(const XMFLOAT3& origin, const XMFLOAT3& size, std::vector<CDiffusedVertex>& outVertices, std::vector<UINT>& outIndices);
-
-public:
-	XMFLOAT3 m_xmf3Min = XMFLOAT3(FLT_MAX, FLT_MAX, FLT_MAX);
-	XMFLOAT3 m_xmf3Max = XMFLOAT3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 };
 
 class CAirplaneMeshDiffused : public CMesh
@@ -200,12 +165,4 @@ public:
 
 	//격자의 좌표가 (x, z)일 때 교점(정점)의 색상을 반환하는 함수이다. 
 	virtual XMFLOAT4 OnGetColor(int x, int z, void *pContext);
-};
-
-class CSphereMeshDiffused : public CMesh
-{
-public:
-	CSphereMeshDiffused(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
-		* pd3dCommandList, float fRadius = 2.0f, int nSlices = 20, int nStacks = 20);
-	virtual ~CSphereMeshDiffused();
 };

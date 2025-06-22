@@ -7,7 +7,6 @@
 #include "targetver.h"
 #define WIN32_LEAN_AND_MEAN             // 거의 사용되지 않는 내용을 Windows 헤더에서 제외합니다.
 // Windows 헤더 파일
-#define NOMINMAX
 #include <windows.h>
 #include <mmsystem.h>
 #pragma comment(lib, "winmm.lib")
@@ -23,7 +22,6 @@
 #include <string>
 #include <wrl.h>
 #include <shellapi.h>
-#include <algorithm>
 
 #include <d3d12.h>
 #include <dxgi1_4.h>
@@ -85,7 +83,7 @@ namespace Vector3
 		XMStoreFloat3(&xmf3Result, xmvVector);
 		return(xmf3Result);
 	}
-	inline XMFLOAT3 ScalarProduct(const XMFLOAT3& xmf3Vector, float fScalar, bool bNormalize =
+	inline XMFLOAT3 ScalarProduct(XMFLOAT3& xmf3Vector, float fScalar, bool bNormalize =
 		true)
 	{
 		XMFLOAT3 xmf3Result;
@@ -115,23 +113,6 @@ namespace Vector3
 		XMStoreFloat3(&xmf3Result, XMLoadFloat3(&xmf3Vector1) -
 			XMLoadFloat3(&xmf3Vector2));
 		return(xmf3Result);
-	}
-	inline XMFLOAT3 Min(const XMFLOAT3& a, const XMFLOAT3& b)
-	{
-		return XMFLOAT3(
-			std::min(a.x, b.x),
-			std::min(a.y, b.y),
-			std::min(a.z, b.z)
-		);
-	}
-
-	inline XMFLOAT3 Max(const XMFLOAT3& a, const XMFLOAT3& b)
-	{
-		return XMFLOAT3(
-			std::max(a.x, b.x),
-			std::max(a.y, b.y),
-			std::max(a.z, b.z)
-		);
 	}
 	inline float DotProduct(const XMFLOAT3& xmf3Vector1, const XMFLOAT3& xmf3Vector2)
 	{

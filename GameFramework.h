@@ -71,9 +71,6 @@ private:
 
 	CScene* m_pScene;
 
-	CGameObject
-		* m_pSelectedObject = NULL;
-
 public:
 	CCamera* m_pCamera = NULL;
 
@@ -127,8 +124,5 @@ public:
 
 public:
 	void MoveToNextFrame();
-
-public:
-	void ProcessSelectedObject(DWORD dwDirection, float cxDelta, float cyDelta);
 };
 

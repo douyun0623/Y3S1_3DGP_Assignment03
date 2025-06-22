@@ -50,7 +50,6 @@ protected:
 	ID3D12PipelineState **m_ppd3dPipelineStates = NULL;
 	int m_nPipelineStates = 0;
 
-
 };
 
 
@@ -65,7 +64,8 @@ public:
 	virtual D3D12_SHADER_BYTECODE CreateVertexShader(ID3DBlob** ppd3dShaderBlob);
 	virtual D3D12_SHADER_BYTECODE CreatePixelShader(ID3DBlob** ppd3dShaderBlob);
 
-	virtual void CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature);
+	virtual void CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature
+		* pd3dGraphicsRootSignature);
 };
 
 // CObjectsShader 클래스는 게임 객체들을 포함하는 셰이더 객체이다. 
@@ -93,11 +93,6 @@ public:
 protected:
 	CGameObject** m_ppObjects = NULL;
 	int m_nObjects = 0;
-
-public:
-	//셰이더에 포함되어 있는 모든 게임 객체들에 대한 마우스 픽킹을 수행한다.
-	virtual CGameObject* PickObjectByRayIntersection(XMFLOAT3& xmf3PickPosition,
-		XMFLOAT4X4& xmf4x4View, float* pfNearHitDistance);
 };
 
 class CTerrainShader : public CShader

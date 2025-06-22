@@ -17,7 +17,7 @@ D3D12_RASTERIZER_DESC CShader::CreateRasterizerState()
 	D3D12_RASTERIZER_DESC d3dRasterizerDesc;
 	::ZeroMemory(&d3dRasterizerDesc, sizeof(D3D12_RASTERIZER_DESC));
 	d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
-	d3dRasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;		// D3D12_CULL_MODE_BACK
+	d3dRasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
 	d3dRasterizerDesc.FrontCounterClockwise = FALSE;
 	d3dRasterizerDesc.DepthBias = 0;
 	d3dRasterizerDesc.DepthBiasClamp = 0.0f;
@@ -106,7 +106,8 @@ D3D12_SHADER_BYTECODE CShader::CreatePixelShader(ID3DBlob **ppd3dShaderBlob)
 }
 
 //셰이더 소스 코드를 컴파일하여 바이트 코드 구조체를 반환한다. 
-D3D12_SHADER_BYTECODE CShader::CompileShaderFromFile(const WCHAR *pszFileName, LPCSTR pszShaderName, LPCSTR pszShaderProfile, ID3DBlob** ppd3dShaderBlob)
+D3D12_SHADER_BYTECODE CShader::CompileShaderFromFile(const WCHAR *pszFileName, LPCSTR pszShaderName, 
+	LPCSTR pszShaderProfile, ID3DBlob** ppd3dShaderBlob)
 {
 	UINT nCompileFlags = 0;
 #if defined(_DEBUG)
@@ -299,10 +300,6 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	float fyPitch = 12.0f * 3.5f;
 	float fzPitch = 12.0f * 3.5f;
 
-	//구 메쉬를 생성한다.
-	CSphereMeshDiffused* pSphereMesh = new CSphereMeshDiffused(pd3dDevice, pd3dCommandList, 6.0f, 20, 20);
-
-
 	//직육면체를 지형 표면에 그리고 지형보다 높은 위치에 일정한 간격으로 배치한다. 
 	int xObjects = int(fTerrainWidth / fxPitch), yObjects = 2, zObjects = int(fTerrainLength / fzPitch);
 	m_nObjects = xObjects * yObjects * zObjects;
@@ -388,25 +385,6 @@ void CObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera*
 	}
 }
 
-CGameObject* CObjectsShader::PickObjectByRayIntersection(XMFLOAT3& xmf3PickPosition,
-	XMFLOAT4X4& xmf4x4View, float* pfNearHitDistance)
-{
-	int nIntersected = 0;
-	*pfNearHitDistance = FLT_MAX;
-	float fHitDistance = FLT_MAX;
-	CGameObject* pSelectedObject = NULL;
-	for (int j = 0; j < m_nObjects; j++)
-	{
-		nIntersected = m_ppObjects[j]->PickObjectByRayIntersection(xmf3PickPosition,
-			xmf4x4View, &fHitDistance);
-		if ((nIntersected > 0) && (fHitDistance < *pfNearHitDistance))
-		{
-			*pfNearHitDistance = fHitDistance;
-			pSelectedObject = m_ppObjects[j];
-		}
-	}
-	return(pSelectedObject);
-}
 
 
 //------------------------------------------------------------------------------------------------
