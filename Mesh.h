@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 //정점을 표현하기 위한 클래스를 선언한다. 
 class CVertex
 {
@@ -112,6 +114,18 @@ public:
 	CCubeMeshDiffused(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, 
 		float fWidth = 2.0f, float fHeight = 2.0f, float fDepth = 2.0f);
 	virtual ~CCubeMeshDiffused();
+};
+
+// 탱크 추가
+class CTankMeshDiffused : public CMesh
+{
+public:
+	//직육면체의 가로, 세로, 깊이의 길이를 지정하여 직육면체 메쉬를 생성한다. 
+	CTankMeshDiffused(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,
+		float fWidth = 2.0f, float fHeight = 2.0f, float fDepth = 2.0f);
+	virtual ~CTankMeshDiffused();
+public:
+	void CreateTankMesh(const XMFLOAT3& origin, const XMFLOAT3& size, std::vector<CDiffusedVertex>& outVertices, std::vector<UINT>& outIndices);
 };
 
 class CAirplaneMeshDiffused : public CMesh

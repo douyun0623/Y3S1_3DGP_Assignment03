@@ -443,7 +443,9 @@ CTerrainPlayer::CTerrainPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 	//카메라의 위치가 변경될 때 지형의 정보에 따라 카메라의 위치를 변경할 수 있도록 설정한다. 
 	SetCameraUpdatedContext(pTerrain);
 
-	CCubeMeshDiffused* pCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList,
+	//CCubeMeshDiffused* pCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList,
+	//	4.0f, 12.0f, 4.0f);
+	CTankMeshDiffused* pCubeMesh = new CTankMeshDiffused(pd3dDevice, pd3dCommandList,
 		4.0f, 12.0f, 4.0f);
 
 	SetMesh(0, pCubeMesh);
