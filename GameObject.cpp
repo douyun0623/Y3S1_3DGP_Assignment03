@@ -83,19 +83,56 @@ void CGameObject::Rotate(XMFLOAT3* pxmf3Axis, float fAngle)
 	m_xmf4x4World = Matrix4x4::Multiply(mtxRotate, m_xmf4x4World);
 }
 
+bool CGameObject::IsVisible(CCamera* pCamera)
+{
+	OnPrepareRender();
+
+	if (!pCamera) return false;
+
+	for (int i = 0; i < m_nMeshes; i++) {
+		if (m_ppMeshes[i]) {
+			BoundingOrientedBox xmBoundingBox = m_ppMeshes[i]->GetBoundingBox();
+			xmBoundingBox.Transform(xmBoundingBox, XMLoadFloat4x4(&m_xmf4x4World));
+			
+			// 메시 중 하나라도 보이면 true 반환
+			if (pCamera->IsInFrustum(xmBoundingBox)) {
+				return true;
+			}
+		}
+	}
+
+	// 모든 메시가 시야 밖이면 false
+	return false;
+}
+
 void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	OnPrepareRender();
 
-	//객체의 정보를 셰이더 변수(상수 버퍼)로 복사한다. 
-	UpdateShaderVariables(pd3dCommandList);
+	////객체의 정보를 셰이더 변수(상수 버퍼)로 복사한다. 
+	//UpdateShaderVariables(pd3dCommandList);
 
-	//게임 객체가 포함하는 모든 메쉬를 렌더링한다. 
-	if (m_ppMeshes)
-	{
-		for (int i = 0; i < m_nMeshes; i++)
+	////게임 객체가 포함하는 모든 메쉬를 렌더링한다. 
+	//if (m_ppMeshes)
+	//{
+	//	for (int i = 0; i < m_nMeshes; i++)
+	//	{
+	//		if (m_ppMeshes[i]) m_ppMeshes[i]->Render(pd3dCommandList);
+	//	}
+	//}
+
+	//게임 객체가 카메라에 보이면 렌더링한다. 
+	if (IsVisible(pCamera)) {
+		//객체의 정보를 셰이더 변수(상수 버퍼)로 복사한다. 
+		UpdateShaderVariables(pd3dCommandList);
+
+		//게임 객체가 포함하는 모든 메쉬를 렌더링한다. 
+		if (m_ppMeshes)
 		{
-			if (m_ppMeshes[i]) m_ppMeshes[i]->Render(pd3dCommandList);
+			for (int i = 0; i < m_nMeshes; i++)
+			{
+				if (m_ppMeshes[i]) m_ppMeshes[i]->Render(pd3dCommandList);
+			}
 		}
 	}
 }

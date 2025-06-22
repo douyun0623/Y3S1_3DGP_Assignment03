@@ -624,7 +624,16 @@ CHeightMapGridMesh::CHeightMapGridMesh(ID3D12Device* pd3dDevice,
 
 	/*xStart와 zStart는 격자의 시작 위치(x-좌표와 z-좌표)를 나타낸다. 
 	커다란 지형은 격자들의 이차원 배열로 만들 필요가 있기 때문에 전체 지형에서 각 격자의 시작 위치를 나타내는 정보가 필요하다.*/
-	float fHeight = 0.0f, fMinHeight = +FLT_MAX, fMaxHeight = -FLT_MAX;
+	// float fHeight = 0.0f, fMinHeight = +FLT_MAX, fMaxHeight = -FLT_MAX;
+
+	// 바운딩 박스를 계산하기 위한 최소/최대 높이 저장용 변수는 이미 있음
+	// (단, 아래 조건문에 fHeight가 아니라 xmf3Position.y 써야 정확함)
+	float fMinHeight = +FLT_MAX;
+	float fMaxHeight = -FLT_MAX;
+
+	// 새롭게 위치 저장용 변수 추가
+	float fMinX = FLT_MAX, fMaxX = -FLT_MAX;
+	float fMinZ = FLT_MAX, fMaxZ = -FLT_MAX;
 
 	for (int i = 0, z = zStart; z < (zStart + nLength); z++)
 	{
@@ -636,8 +645,14 @@ CHeightMapGridMesh::CHeightMapGridMesh(ID3D12Device* pd3dDevice,
 
 			pVertices[i] = CDiffusedVertex(xmf3Position, xmf3Color);
 
-			if (fHeight < fMinHeight) fMinHeight = fHeight;
-			if (fHeight > fMaxHeight) fMaxHeight = fHeight;
+			/*if (fHeight < fMinHeight) fMinHeight = fHeight;
+			if (fHeight > fMaxHeight) fMaxHeight = fHeight;*/
+			if (xmf3Position.y < fMinHeight) fMinHeight = xmf3Position.y;
+			if (xmf3Position.y > fMaxHeight) fMaxHeight = xmf3Position.y;
+			if (xmf3Position.x < fMinX) fMinX = xmf3Position.x;
+			if (xmf3Position.x > fMaxX) fMaxX = xmf3Position.x;
+			if (xmf3Position.z < fMinZ) fMinZ = xmf3Position.z;
+			if (xmf3Position.z > fMaxZ) fMaxZ = xmf3Position.z;
 		}
 	}
 	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices,
@@ -648,6 +663,25 @@ CHeightMapGridMesh::CHeightMapGridMesh(ID3D12Device* pd3dDevice,
 	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
 	
 	delete[] pVertices;
+
+	// 중심 좌표 계산
+	XMFLOAT3 center = {
+		(fMinX + fMaxX) / 2.0f,
+		(fMinHeight + fMaxHeight) / 2.0f,
+		(fMinZ + fMaxZ) / 2.0f
+	};
+
+	// 크기 계산
+	XMFLOAT3 extents = {
+		(fMaxX - fMinX) / 2.0f,
+		(fMaxHeight - fMinHeight) / 2.0f,
+		(fMaxZ - fMinZ) / 2.0f
+	};
+
+	// 바운딩 박스 저장
+	m_xmBoundingBox.Center = center;
+	m_xmBoundingBox.Extents = extents;
+	m_xmBoundingBox.Orientation = XMFLOAT4(0, 0, 0, 1); // 회전 없음
 
 	// 따라하기 15번 그림 참조.
 	/*이렇게 인덱스를 나열하면 인덱스 버퍼는 ((nWidth*2)*(nLength-1))+((nLength-1)-1)개의 인덱스를 갖는다. 

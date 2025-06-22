@@ -16,6 +16,8 @@ public:
 	void AddRef() { m_nReferences++; }
 	void Release() { if (--m_nReferences <= 0) delete this; }
 
+
+
 protected:
 	XMFLOAT4X4 m_xmf4x4World;
 	CShader* m_pShader = NULL;
@@ -36,6 +38,10 @@ public:
 
 public:
 	void Rotate(XMFLOAT3* pxmf3Axis, float fAngle);
+
+public:
+	//게임 객체가 카메라에 보인는 가를 검사한다. 
+	bool IsVisible(CCamera* pCamera = NULL);
 
 public:
 	//상수 버퍼를 생성한다. 
