@@ -178,6 +178,11 @@ CGameObject* CScene::PickObjectPointedByCursor(int xClient, int yClient, CCamera
 	return(pNearestObject);
 }
 
+void CScene::FireBullet(const XMFLOAT3& position, const XMFLOAT3& direction)
+{
+	for (int i = 0; i < m_nBShaders; i++) m_pBulletShader[i].FireBullet(position, direction);
+}
+
 void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	pCamera->SetViewportsAndScissorRects(pd3dCommandList);

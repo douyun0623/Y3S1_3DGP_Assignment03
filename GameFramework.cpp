@@ -398,6 +398,9 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case VK_F9:
 			ChangeSwapChainState();
 			break;
+		case 'K':
+			if (m_pScene)m_pScene->FireBullet(m_pPlayer->GetPosition(), m_pPlayer->GetLookVector());
+			break;
 		default:
 			break;
 		}

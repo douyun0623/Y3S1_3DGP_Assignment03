@@ -52,5 +52,7 @@ public:
 
 	CGameObject* PickObjectPointedByCursor(int xClient, int yClient, CCamera* pCamera);
 
+	void FireBullet(const XMFLOAT3& position, const XMFLOAT3& direction);
+
 };
 
