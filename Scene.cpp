@@ -83,10 +83,10 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 		257, xmf3Scale, xmf4Color);
 #endif
 
-	m_nShaders = 1;
+	/*m_nShaders = 1;
 	m_pShaders = new CObjectsShader[m_nShaders];
 	m_pShaders[0].CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
-	m_pShaders[0].BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
+	m_pShaders[0].BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);*/
 
 	m_nBShaders = 1;
 	m_pBulletShader = new CBulletShader[m_nBShaders];
@@ -181,6 +181,10 @@ CGameObject* CScene::PickObjectPointedByCursor(int xClient, int yClient, CCamera
 void CScene::FireBullet(const XMFLOAT3& position, const XMFLOAT3& direction)
 {
 	for (int i = 0; i < m_nBShaders; i++) m_pBulletShader[i].FireBullet(position, direction);
+}
+
+void CScene::CheckBulletEnemyCollisions()
+{
 }
 
 void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)

@@ -80,6 +80,8 @@ public:
 	int PickObjectByRayIntersection(XMFLOAT3& xmf3PickPosition, XMFLOAT4X4& xmf4x4View,
 		float* pfHitDistance);
 
+
+
 };
 
 class CRotatingObject : public CGameObject
@@ -111,7 +113,9 @@ public:
 
 private:
 	bool active = false;
-	float moveSpeed = 20.f;
+	float moveSpeed = 100.f;
+	float m_fDistanceTraveled = 0.f;
+	const float m_fMaxRange = 1000.f;
 
 public:
 	void SetActive(bool b) { active = b; }

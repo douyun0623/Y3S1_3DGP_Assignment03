@@ -336,7 +336,30 @@ CBulletObject::CBulletObject(int nMeshes)
 
 void CBulletObject::Animate(float fTimeElapsed)
 {
-	if (active) CGameObject::MoveForward(moveSpeed * fTimeElapsed);
+	if (active) {
+		// 이동 전 위치 저장
+		XMFLOAT3 prevPos = GetPosition();
+
+		// 이동
+		CGameObject::MoveForward(moveSpeed * fTimeElapsed);
+
+		// 이동 후 위치 계산
+		XMFLOAT3 currPos = GetPosition();
+
+		// 두 점 사이의 거리 계산
+		float dx = currPos.x - prevPos.x;
+		float dy = currPos.y - prevPos.y;
+		float dz = currPos.z - prevPos.z;
+
+		float distMoved = sqrtf(dx * dx + dy * dy + dz * dz);
+		m_fDistanceTraveled += distMoved;
+
+		// 일정 거리 이상 이동하면 비활성화
+		if (m_fDistanceTraveled > m_fMaxRange) {
+			SetActive(false);
+			m_fDistanceTraveled = 0.0f; // 다음 사용을 위한 초기화
+		}
+	}
 }
 
 void CBulletObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)

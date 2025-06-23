@@ -54,5 +54,6 @@ public:
 
 	void FireBullet(const XMFLOAT3& position, const XMFLOAT3& direction);
 
+	void CheckBulletEnemyCollisions();
 };
 

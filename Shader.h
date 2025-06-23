@@ -95,6 +95,9 @@ protected:
 
 public:
 	CGameObject* PickObjectByRayIntersection(XMFLOAT3& xmf3PickPosition, XMFLOAT4X4& xmf4x4View, float* pfNearHitDistance);
+
+public:
+	CGameObject* getObject(int i) { return static_cast<CGameObject*>(m_ppObjects[i]); }
 };
 
 class CBulletShader : public CObjectsShader
@@ -110,6 +113,8 @@ public:
 
 public:
 	void FireBullet(const XMFLOAT3& position, const XMFLOAT3& direction);
+
+	CBulletObject* GetBullet(int i) { return static_cast<CBulletObject*>(m_ppObjects[i]); }
 };
 
 class CTerrainShader : public CShader
